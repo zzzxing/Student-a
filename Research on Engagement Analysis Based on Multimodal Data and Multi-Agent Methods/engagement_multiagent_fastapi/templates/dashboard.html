@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}仪表盘{% endblock %}
+{% block content %}
+<section class="page-header"><div class="section-kicker">Dashboard</div><h1 class="page-title">教师端课堂仪表盘</h1></section>
+<form class="panel-card mb-3" method="get" action="/dashboard">
+  <label class="form-label">选择演示数据集</label>
+  <div class="d-flex gap-2">
+    <select class="form-select" name="dataset_id">{% for ds in datasets %}<option value="{{ ds.dataset_id }}" {% if ds.dataset_id == dataset_id %}selected{% endif %}>{{ ds.name }}</option>{% endfor %}</select>
+    <button class="btn btn-primary-soft" type="submit">切换</button>
+  </div>
+</form>
+<section class="summary-grid">
+  <div class="summary-card"><div class="stat-label">平均专注度</div><div class="stat-value">{{ snapshot.avg_focus }}</div></div>
+  <div class="summary-card"><div class="stat-label">风险学生</div><div class="stat-value">{{ snapshot.risk_students }}</div></div>
+  <div class="summary-card"><div class="stat-label">低谷阶段数</div><div class="stat-value">{{ snapshot.low_phase_count }}</div></div>
+</section>
+<div class="panel-card mt-3"><h3 class="panel-title">今日干预建议</h3><p class="panel-description mt-2">{{ snapshot.best_intervention }}</p></div>
+<div class="panel-card mt-3"><h3 class="panel-title">最近报告</h3><ul class="detail-list mt-2">{% for item in recent_reports %}<li>{{ item.dataset_name }}：平均 {{ item.avg_focus }} 分。</li>{% endfor %}</ul></div>
+{% endblock %}

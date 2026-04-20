@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}数据管理{% endblock %}
+{% block content %}
+<h1 class="page-title">数据管理页</h1>
+<form method="post" action="/data/upload" enctype="multipart/form-data" class="panel-card mb-3">
+  <label class="form-label">上传模拟课堂数据 JSON</label>
+  <div class="d-flex gap-2"><input class="form-control" type="file" name="upload_file" accept=".json"><button class="btn btn-primary-soft" type="submit">上传校验</button></div>
+  {% if upload_message %}<p class="panel-description mt-2">{{ upload_message }}</p>{% endif %}
+</form>
+<div class="panel-card mb-3"><h3 class="panel-title">预置演示数据集</h3><ul class="detail-list mt-2">{% for ds in datasets %}<li>{{ ds.dataset_id }} - {{ ds.name }}</li>{% endfor %}</ul></div>
+<div class="summary-grid">
+  <div class="summary-card"><div class="stat-label">班级元数据</div><div class="stat-text mt-2">{{ classes|length }} 个班级</div></div>
+  <div class="summary-card"><div class="stat-label">课程元数据</div><div class="stat-text mt-2">{{ courses|length }} 门课程</div></div>
+  <div class="summary-card"><div class="stat-label">学生画像</div><div class="stat-text mt-2">{{ students|length }} 名学生</div></div>
+</div>
+{% endblock %}

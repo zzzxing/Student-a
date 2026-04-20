@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}班级列表{% endblock %}
+{% block content %}
+<h1 class="page-title">班级列表</h1>
+<div class="summary-grid mt-3">{% for item in classes %}<div class="summary-card"><div class="stat-label">{{ item.class_id }}</div><div class="stat-text mt-2">{{ item.name }}</div><div class="stat-text">学生数：{{ item.student_count }}</div></div>{% endfor %}</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}课堂实时分析{% endblock %}
+{% block content %}
+<section class="page-header"><div class="section-kicker">Realtime</div><h1 class="page-title">课堂实时分析页</h1><p class="page-description">展示趋势线、热力矩阵、课堂阶段和最佳干预时机。</p></section>
+<form class="panel-card mb-3" method="get" action="/realtime">
+  <label class="form-label">选择演示数据集</label>
+  <div class="d-flex gap-2"><select class="form-select" name="dataset_id">{% for ds in datasets %}<option value="{{ ds.dataset_id }}" {% if ds.dataset_id == dataset_id %}selected{% endif %}>{{ ds.name }}</option>{% endfor %}</select><button class="btn btn-primary-soft" type="submit">切换</button></div>
+</form>
+<div class="panel-card">
+  <div class="chart-shell"><canvas id="realtimeChart"></canvas></div>
+  <div id="realtimeInfo" class="mt-3"></div>
+  <div id="heatmap" class="mt-3"></div>
+</div>
+<script>
+window.realtimeDataset = {{ analysis | tojson }};
+</script>
+{% endblock %}

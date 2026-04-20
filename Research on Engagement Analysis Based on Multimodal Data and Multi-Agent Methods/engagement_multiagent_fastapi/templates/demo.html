@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}演示模式{% endblock %}
+{% block content %}
+<h1 class="page-title">竞赛演示模式</h1>
+<p class="page-description">点击一键演示将按固定顺序跳转：仪表盘 → 实时分析 → 单学生分析 → 报告页。</p>
+<div class="panel-card">
+  <button class="btn btn-primary-soft" id="startDemoBtn">一键进入演示模式</button>
+  <ol class="detail-list mt-3">
+    <li>首页仪表盘</li><li>班级实时分析</li><li>单学生分析</li><li>报告页</li>
+  </ol>
+</div>
+{% endblock %}
