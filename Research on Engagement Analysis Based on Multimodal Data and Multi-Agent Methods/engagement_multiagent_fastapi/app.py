@@ -68,9 +68,8 @@ def _contest_context(request: Request, active: str, dataset_id: str = DEFAULT_DA
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request) -> HTMLResponse:
-    dashboard = contest_service.dashboard_snapshot(DEFAULT_DATASET)
-    return templates.TemplateResponse("index.html", {**_contest_context(request, "index"), "dashboard": dashboard})
+async def index() -> RedirectResponse:
+    return RedirectResponse(url="/dashboard", status_code=303)
 
 
 @app.get("/login", response_class=HTMLResponse)
@@ -89,6 +88,7 @@ async def dashboard_page(request: Request, dataset_id: str = DEFAULT_DATASET) ->
     analysis = contest_service.analyze_dataset(dataset_id)
     snapshot = contest_service.dashboard_snapshot(dataset_id)
     latest = analysis["frames"][-1] if analysis["frames"] else {}
+    report = contest_service.generate_report(dataset_id)
     return templates.TemplateResponse(
         "dashboard.html",
         {
@@ -96,19 +96,13 @@ async def dashboard_page(request: Request, dataset_id: str = DEFAULT_DATASET) ->
             "snapshot": snapshot,
             "analysis": analysis,
             "latest": latest,
+            "report": report,
             "recent_reports": [contest_service.generate_report(item["dataset_id"]) for item in contest_service.datasets()],
+            "focus_labels": [f"片段{frame['time_block']}" for frame in analysis["frames"]],
+            "focus_scores": [frame["avg_focus"] for frame in analysis["frames"]],
+            "predict_scores": [frame["predicted_next_focus"] for frame in analysis["frames"]],
         },
     )
-
-
-@app.get("/classes", response_class=HTMLResponse)
-async def classes_page(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("classes.html", {"request": request, "active": "classes", "classes": contest_service.classes})
-
-
-@app.get("/courses", response_class=HTMLResponse)
-async def courses_page(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("courses.html", {"request": request, "active": "courses", "courses": contest_service.courses})
 
 
 @app.get("/realtime", response_class=HTMLResponse)

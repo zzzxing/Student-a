@@ -54,6 +54,8 @@ class ContestService:
             "risk_students": len(analysis["risk_students"]),
             "low_phase_count": len([p for p in analysis["phase_summary"] if p["avg_focus"] < 60]),
             "best_intervention": latest.get("recommended_action", "维持当前教学节奏"),
+            "best_intervention_block": analysis["best_intervention_block"],
+            "prediction_next": analysis["prediction_next"],
         }
 
     def analyze_dataset(self, dataset_id: str) -> dict[str, Any]:
@@ -88,7 +90,9 @@ class ContestService:
                 elif prev - avg_focus >= 2.0:
                     trend_state = "下滑"
 
+            predicted_next = self._predict_next_focus(avg_focus, trend_state, frame.get("phase", "lecture"))
             recommended_action = self._recommended_action(avg_focus, frame.get("phase", "lecture"), trend_state)
+            evidence = self._frame_evidence(student_rows)
             frames.append(
                 {
                     "time_block": idx,
@@ -96,14 +100,19 @@ class ContestService:
                     "phase": frame.get("phase", "lecture"),
                     "avg_focus": round(avg_focus, 2),
                     "trend_state": trend_state,
+                    "predicted_next_focus": predicted_next,
                     "intervention_needed": avg_focus < 63 or trend_state == "下滑",
                     "recommended_action": recommended_action,
+                    "intervention_reason": self._intervention_reason(avg_focus, trend_state, evidence),
+                    "evidence": evidence,
                     "students": student_rows,
                 }
             )
 
         risk_students = self._risk_students(student_focus_history, students_meta)
         phase_summary = self._phase_summary(frames)
+        best_intervention_block = self._best_intervention_block(frames)
+        prediction_next = frames[-1]["predicted_next_focus"] if frames else 0
         return {
             "dataset_id": dataset["dataset_id"],
             "dataset_name": dataset.get("name", dataset["dataset_id"]),
@@ -113,6 +122,8 @@ class ContestService:
             "avg_focus": mean([f["avg_focus"] for f in frames]) if frames else 0,
             "risk_students": risk_students,
             "phase_summary": phase_summary,
+            "best_intervention_block": best_intervention_block,
+            "prediction_next": prediction_next,
         }
 
     def student_timeline(self, dataset_id: str, student_id: str) -> dict[str, Any]:
@@ -137,6 +148,10 @@ class ContestService:
 
         min_idx = min(range(len(series)), key=lambda i: series[i]["focus_score"])
         max_idx = max(range(len(series)), key=lambda i: series[i]["focus_score"])
+        factor_avg = {
+            key: round(mean(item["factors"][key] for item in series), 2)
+            for key in ["姿态变化", "互动活跃度", "持续低头时长", "音频活跃度"]
+        }
         return {
             "student_id": student_id,
             "student_name": next((s["student_name"] for s in analyzed["frames"][0]["students"] if s["student_id"] == student_id), student_id),
@@ -147,6 +162,7 @@ class ContestService:
                 {"label": "低谷", "time_block": series[min_idx]["time_block"], "value": series[min_idx]["focus_score"]},
                 {"label": "峰值", "time_block": series[max_idx]["time_block"], "value": series[max_idx]["focus_score"]},
             ],
+            "factor_avg": factor_avg,
             "recommendation": self._student_recommendation(series),
         }
 
@@ -165,6 +181,10 @@ class ContestService:
             "teacher_advice": self._teacher_advice(analyzed["avg_focus"], len(low_frames)),
             "student_advice": "建议在课堂中段增加互动问答，并对连续低迷学生进行轻量点名引导。",
             "narrative": self._narrative(analyzed, low_frames, top_risk),
+            "best_intervention_block": analyzed["best_intervention_block"],
+            "prediction_next": analyzed["prediction_next"],
+            "frame_scores": [f["avg_focus"] for f in analyzed["frames"]],
+            "frame_labels": [f"片段{f['time_block']}" for f in analyzed["frames"]],
         }
 
     def _score_student(self, student: dict[str, Any], phase: str) -> tuple[float, dict[str, float]]:
@@ -201,6 +221,11 @@ class ContestService:
             return "波动"
         return "分神"
 
+    def _predict_next_focus(self, avg_focus: float, trend_state: str, phase: str) -> float:
+        drift = -4.0 if trend_state == "下滑" else (2.0 if trend_state == "上升" else -1.0)
+        phase_bias = -1.5 if phase == "lecture" else 1.5
+        return round(max(0.0, min(100.0, avg_focus + drift + phase_bias)), 2)
+
     def _recommended_action(self, avg_focus: float, phase: str, trend_state: str) -> str:
         if avg_focus < 55:
             return "立即发起快速提问并点名互动"
@@ -209,6 +234,21 @@ class ContestService:
         if phase == "lecture":
             return "每 8 分钟增加一次互动投票"
         return "维持节奏并关注边缘学生"
+
+    def _intervention_reason(self, avg_focus: float, trend_state: str, evidence: dict[str, float]) -> str:
+        if trend_state == "下滑":
+            return "连续下滑趋势触发预警。"
+        if avg_focus < 60:
+            return "平均专注度低于安全阈值。"
+        if evidence.get("互动活跃度", 0) < 20:
+            return "互动活跃度偏低，建议提升参与感。"
+        return "课堂状态平稳，进行轻干预即可。"
+
+    def _frame_evidence(self, students: list[dict[str, Any]]) -> dict[str, float]:
+        if not students:
+            return {"姿态变化": 0, "互动活跃度": 0, "持续低头时长": 0, "音频活跃度": 0}
+        keys = ["姿态变化", "互动活跃度", "持续低头时长", "音频活跃度"]
+        return {k: round(mean(stu["explanation_factors"][k] for stu in students), 2) for k in keys}
 
     def _risk_students(self, history: dict[str, list[float]], students_meta: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
         ranked = []
@@ -232,6 +272,11 @@ class ContestService:
         for frame in frames:
             bucket.setdefault(frame["phase"], []).append(frame["avg_focus"])
         return [{"phase": phase, "avg_focus": round(mean(scores), 2), "count": len(scores)} for phase, scores in bucket.items()]
+
+    def _best_intervention_block(self, frames: list[dict[str, Any]]) -> int:
+        if not frames:
+            return 0
+        return min(frames, key=lambda x: x["predicted_next_focus"])["time_block"]
 
     def _student_recommendation(self, series: list[dict[str, Any]]) -> str:
         avg = mean(item["focus_score"] for item in series)

@@ -1,19 +1,77 @@
 {% extends 'base.html' %}
-{% block title %}仪表盘{% endblock %}
+{% block title %}首页仪表盘{% endblock %}
 {% block content %}
-<section class="page-header"><div class="section-kicker">Dashboard</div><h1 class="page-title">教师端课堂仪表盘</h1></section>
-<form class="panel-card mb-3" method="get" action="/dashboard">
-  <label class="form-label">选择演示数据集</label>
+<section class="hero-surface hero-surface-simple reveal-item" data-delay="0.03">
+  <div class="hero-simple-inner hero-simple-centered">
+    <div class="section-kicker">Teacher Dashboard</div>
+    <h1 class="hero-title">课堂 AI 总览与风险预警中心</h1>
+    <p class="hero-description hero-description-compact">聚合班级状态、预测下滑点、干预建议和重点学生名单，支持答辩现场 30 秒讲清系统价值。</p>
+  </div>
+</section>
+
+<form class="panel-card mb-4" method="get" action="/dashboard">
+  <label class="form-label">演示课堂样本</label>
   <div class="d-flex gap-2">
     <select class="form-select" name="dataset_id">{% for ds in datasets %}<option value="{{ ds.dataset_id }}" {% if ds.dataset_id == dataset_id %}selected{% endif %}>{{ ds.name }}</option>{% endfor %}</select>
-    <button class="btn btn-primary-soft" type="submit">切换</button>
+    <button class="btn btn-primary-soft" type="submit">加载</button>
   </div>
 </form>
+
 <section class="summary-grid">
-  <div class="summary-card"><div class="stat-label">平均专注度</div><div class="stat-value">{{ snapshot.avg_focus }}</div></div>
-  <div class="summary-card"><div class="stat-label">风险学生</div><div class="stat-value">{{ snapshot.risk_students }}</div></div>
-  <div class="summary-card"><div class="stat-label">低谷阶段数</div><div class="stat-value">{{ snapshot.low_phase_count }}</div></div>
+  <article class="summary-card"><div class="stat-label">班级平均专注度</div><div class="stat-value count-up-decimal" data-target="{{ snapshot.avg_focus }}">0.00</div></article>
+  <article class="summary-card"><div class="stat-label">下一个时间片预测</div><div class="stat-value count-up-decimal" data-target="{{ snapshot.prediction_next }}">0.00</div></article>
+  <article class="summary-card"><div class="stat-label">最佳干预时机</div><div class="stat-value">第 {{ snapshot.best_intervention_block }} 片段</div></article>
 </section>
-<div class="panel-card mt-3"><h3 class="panel-title">今日干预建议</h3><p class="panel-description mt-2">{{ snapshot.best_intervention }}</p></div>
-<div class="panel-card mt-3"><h3 class="panel-title">最近报告</h3><ul class="detail-list mt-2">{% for item in recent_reports %}<li>{{ item.dataset_name }}：平均 {{ item.avg_focus }} 分。</li>{% endfor %}</ul></div>
+
+<div class="row g-4 mt-1">
+  <div class="col-lg-8">
+    <div class="panel-card">
+      <div class="panel-head"><div><div class="section-kicker">动态趋势</div><h3 class="panel-title">班级专注度与预测曲线</h3></div></div>
+      <div class="chart-shell mt-3"><canvas id="dashboardChart"></canvas></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel-card h-100">
+      <div class="section-kicker">AI建议</div>
+      <h3 class="panel-title mt-2">当前最优干预动作</h3>
+      <p class="panel-description mt-2">{{ latest.recommended_action }}</p>
+      <p class="panel-description mt-2">触发依据：{{ latest.intervention_reason }}</p>
+      <a href="/realtime?dataset_id={{ dataset_id }}" class="btn btn-primary-soft mt-2 w-100">进入实时分析</a>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-1">
+  <div class="col-lg-6">
+    <div class="panel-card">
+      <div class="section-kicker">重点关注学生</div>
+      <ul class="detail-list mt-2">
+        {% for item in analysis.risk_students[:4] %}
+        <li>{{ item.student_name }}：风险指数 {{ item.risk_index }}，平均专注 {{ item.avg_focus }}。
+          <a href="/student/{{ item.student_id }}?dataset_id={{ dataset_id }}">查看个体分析</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel-card">
+      <div class="section-kicker">最近报告摘要</div>
+      <ul class="detail-list mt-2">
+        {% for item in recent_reports %}
+        <li>{{ item.dataset_name }}：平均 {{ item.avg_focus }}，最佳干预点第 {{ item.best_intervention_block }} 片段。</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+window.dashboardCurve = {
+  labels: {{ focus_labels | tojson }},
+  actual: {{ focus_scores | tojson }},
+  predict: {{ predict_scores | tojson }}
+};
+</script>
 {% endblock %}

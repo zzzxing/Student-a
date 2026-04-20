@@ -1,10 +1,35 @@
 {% extends 'base.html' %}
-{% block title %}单学生分析{% endblock %}
+{% block title %}单学生分析页{% endblock %}
 {% block content %}
-<h1 class="page-title">单学生分析：{{ student.student_name }}</h1>
-<p class="page-description">数据集：{{ student.dataset_name }} ｜ 平均分：{{ student.avg_focus }}</p>
-<div class="panel-card"><div class="chart-shell"><canvas id="studentChart"></canvas></div></div>
-<div class="summary-grid mt-3">{% for ev in student.events %}<div class="summary-card"><div class="stat-label">{{ ev.label }}</div><div class="stat-text mt-2">时间片 {{ ev.time_block }} ｜ {{ ev.value }}</div></div>{% endfor %}</div>
+<section class="page-header">
+  <div class="section-kicker">Student Insight</div>
+  <h1 class="page-title">单学生动态专注度分析：{{ student.student_name }}</h1>
+  <p class="page-description">展示个体专注轨迹、关键事件节点、解释贡献与个体建议。</p>
+</section>
+
+<div class="summary-grid mb-3">
+  <article class="summary-card"><div class="stat-label">平均专注度</div><div class="stat-value">{{ student.avg_focus }}</div></article>
+  <article class="summary-card"><div class="stat-label">低谷节点</div><div class="stat-value">第 {{ student.events[0].time_block if student.events else '-' }} 片段</div></article>
+  <article class="summary-card"><div class="stat-label">峰值节点</div><div class="stat-value">第 {{ student.events[1].time_block if student.events|length > 1 else '-' }} 片段</div></article>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="panel-card"><div class="chart-shell"><canvas id="studentChart"></canvas></div></div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel-card">
+      <div class="section-kicker">解释依据</div>
+      <ul class="detail-list mt-2">
+        <li>姿态变化：{{ student.factor_avg['姿态变化'] }}</li>
+        <li>互动活跃度：{{ student.factor_avg['互动活跃度'] }}</li>
+        <li>持续低头时长：{{ student.factor_avg['持续低头时长'] }}</li>
+        <li>音频活跃度：{{ student.factor_avg['音频活跃度'] }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <div class="panel-card mt-3"><h3 class="panel-title">个体建议</h3><p class="panel-description mt-2">{{ student.recommendation }}</p></div>
 <script>window.studentTimeline = {{ student | tojson }};</script>
 {% endblock %}

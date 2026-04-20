@@ -1,12 +1,38 @@
 {% extends 'base.html' %}
-{% block title %}报告生成页{% endblock %}
+{% block title %}课后报告页{% endblock %}
 {% block content %}
-<section class="page-header"><h1 class="page-title">课后报告生成</h1></section>
+<section class="page-header"><div class="section-kicker">After Class Report</div><h1 class="page-title">课后报告生成与复盘</h1><p class="page-description">输出图表 + 结构化结论 + 叙事化文字，便于教师复盘与答辩展示。</p></section>
+
 <form class="panel-card mb-3" method="get" action="/report">
-  <label class="form-label">选择演示数据集</label>
+  <label class="form-label">选择课堂样本</label>
   <div class="d-flex gap-2"><select class="form-select" name="dataset_id">{% for ds in datasets %}<option value="{{ ds.dataset_id }}" {% if ds.dataset_id == dataset_id %}selected{% endif %}>{{ ds.name }}</option>{% endfor %}</select><button class="btn btn-primary-soft" type="submit">生成报告</button></div>
 </form>
-<div class="panel-card"><h3 class="panel-title">结构化结论</h3><ul class="detail-list mt-2"><li>平均专注度：{{ report.avg_focus }}</li><li>重点关注学生：{% for s in report.risk_students %}{{ s.student_name }}{% if not loop.last %}、{% endif %}{% endfor %}</li><li>高波动时段：{% for f in report.low_frames %}第{{ f.time_block }}片段{% if not loop.last %}、{% endif %}{% endfor %}</li></ul></div>
-<div class="panel-card mt-3"><h3 class="panel-title">教学建议</h3><ul class="detail-list mt-2">{% for item in report.teacher_advice %}<li>{{ item }}</li>{% endfor %}</ul></div>
-<div class="panel-card mt-3"><h3 class="panel-title">叙事化总结</h3><p class="panel-description mt-2">{{ report.narrative }}</p></div>
+
+<section class="summary-grid mb-3">
+  <article class="summary-card"><div class="stat-label">班级平均专注度</div><div class="stat-value">{{ report.avg_focus }}</div></article>
+  <article class="summary-card"><div class="stat-label">预测下个片段</div><div class="stat-value">{{ report.prediction_next }}</div></article>
+  <article class="summary-card"><div class="stat-label">最佳干预时机</div><div class="stat-value">第 {{ report.best_intervention_block }} 片段</div></article>
+</section>
+
+<div class="panel-card mb-3"><div class="chart-shell"><canvas id="reportChart"></canvas></div></div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="panel-card h-100"><h3 class="panel-title">结构化结论</h3>
+      <ul class="detail-list mt-2">
+        <li>高波动时段：{% for f in report.low_frames %}第{{ f.time_block }}片段{% if not loop.last %}、{% endif %}{% else %}无{% endfor %}</li>
+        <li>重点关注学生：{% for s in report.risk_students %}{{ s.student_name }}{% if not loop.last %}、{% endif %}{% endfor %}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel-card h-100"><h3 class="panel-title">教学建议</h3>
+      <ul class="detail-list mt-2">{% for item in report.teacher_advice %}<li>{{ item }}</li>{% endfor %}</ul>
+      <p class="panel-description">学生反馈建议：{{ report.student_advice }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="panel-card mt-3"><h3 class="panel-title">叙事化课堂复盘</h3><p class="panel-description mt-2">{{ report.narrative }}</p></div>
+<script>window.reportSeries = {labels: {{ report.frame_labels | tojson }}, scores: {{ report.frame_scores | tojson }}};</script>
 {% endblock %}

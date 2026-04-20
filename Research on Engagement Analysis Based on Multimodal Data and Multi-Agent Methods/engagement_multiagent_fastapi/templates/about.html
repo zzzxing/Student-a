@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
-{% block title %}关于项目{% endblock %}
+{% block title %}项目亮点页{% endblock %}
 {% block content %}
-<h1 class="page-title">关于项目</h1>
-<div class="panel-card">
-  <p class="panel-description">E-Focus 面向中国大学生计算机设计大赛“人工智能应用”赛道，聚焦教学辅助而非监控。系统支持多模态融合、动态衰减预测、可解释性分析与干预建议生成。</p>
-  <ul class="detail-list mt-2">
-    <li>多模态输入：姿态、朝向、互动、语音活跃度。</li>
-    <li>动态建模：focus_t = base_focus * exp(-lambda * disengagement_minutes) + interaction_boost。</li>
-    <li>可解释输出：展示因素贡献占比与风险学生。</li>
-    <li>叙事报告：自动生成教学复盘文本。</li>
-  </ul>
+<section class="page-header">
+  <div class="section-kicker">AI Highlights</div>
+  <h1 class="page-title">项目亮点与技术创新</h1>
+  <p class="page-description">本系统核心不是“监控”，而是通过可解释分析辅助教师优化教学过程。</p>
+</section>
+<div class="summary-grid">
+  <article class="summary-card"><div class="stat-label">多模态融合</div><p class="stat-text mt-2">姿态、朝向、互动、音频信号联合建模，避免单一指标误判。</p></article>
+  <article class="summary-card"><div class="stat-label">动态衰减预测</div><p class="stat-text mt-2">focus_t = base * exp(-λt) + interaction_boost，预测下滑点。</p></article>
+  <article class="summary-card"><div class="stat-label">可解释干预</div><p class="stat-text mt-2">显示因素贡献 + 干预原因 + 推荐动作，教师可直接执行。</p></article>
+</div>
+<div class="panel-card mt-3">
+  <h3 class="panel-title">竞赛答辩一句话表达</h3>
+  <p class="panel-description mt-2">E-Focus 是一个“课堂认知状态雷达”，帮助教师在关键时机完成教学干预，而不是对学生贴标签。</p>
 </div>
 {% endblock %}
