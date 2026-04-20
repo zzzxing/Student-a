@@ -1,0 +1,109 @@
+{
+  "samples": [
+    {
+      "sample_id": "video_001",
+      "time_block": 1,
+      "pred_label": "DE",
+      "pred_score": -0.42,
+      "vision": {
+        "gaze": "look_away",
+        "head_pose": "head_down",
+        "au_summary": "low_expression"
+      },
+      "audio": {
+        "has_speech": false,
+        "volume_level": "low",
+        "pitch_change": "small"
+      },
+      "text": {
+        "has_transcript": false,
+        "text_len": 0,
+        "summary": ""
+      }
+    },
+    {
+      "sample_id": "video_001",
+      "time_block": 2,
+      "pred_label": "HD",
+      "pred_score": 0.18,
+      "vision": {
+        "gaze": "focus_forward",
+        "head_pose": "stable",
+        "au_summary": "neutral_expression"
+      },
+      "audio": {
+        "has_speech": false,
+        "volume_level": "low",
+        "pitch_change": "small"
+      },
+      "text": {
+        "has_transcript": false,
+        "text_len": 6,
+        "summary": "跟读"
+      }
+    },
+    {
+      "sample_id": "video_001",
+      "time_block": 3,
+      "pred_label": "EG",
+      "pred_score": 0.56,
+      "vision": {
+        "gaze": "focus_forward",
+        "head_pose": "stable",
+        "au_summary": "active_expression"
+      },
+      "audio": {
+        "has_speech": true,
+        "volume_level": "high",
+        "pitch_change": "moderate"
+      },
+      "text": {
+        "has_transcript": true,
+        "text_len": 28,
+        "summary": "主动回答并复述了课堂重点"
+      }
+    },
+    {
+      "sample_id": "video_001",
+      "time_block": 4,
+      "pred_label": "HE",
+      "pred_score": 0.73,
+      "vision": {
+        "gaze": "focus_forward",
+        "head_pose": "stable",
+        "au_summary": "active_expression"
+      },
+      "audio": {
+        "has_speech": true,
+        "volume_level": "high",
+        "pitch_change": "moderate"
+      },
+      "text": {
+        "has_transcript": true,
+        "text_len": 35,
+        "summary": "能够结合例题完整表达解题思路"
+      }
+    },
+    {
+      "sample_id": "video_001",
+      "time_block": 5,
+      "pred_label": "DE",
+      "pred_score": -0.08,
+      "vision": {
+        "gaze": "look_away",
+        "head_pose": "head_down",
+        "au_summary": "neutral_expression"
+      },
+      "audio": {
+        "has_speech": true,
+        "volume_level": "high",
+        "pitch_change": "moderate"
+      },
+      "text": {
+        "has_transcript": true,
+        "text_len": 12,
+        "summary": "仅简短应答"
+      }
+    }
+  ]
+}

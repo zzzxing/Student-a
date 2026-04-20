@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% block title %}时间序列分析 - 基于多模态数据与多智能体的专注度分析系统{% endblock %}
+{% block extra_head %}
+<style>
+.timeline-page .panel-card,
+.timeline-page .focus-panel,
+.timeline-page .summary-card,
+.timeline-page .expand-card {
+  border-color: rgba(79, 107, 237, 0.12);
+}
+.timeline-page .sticky-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+}
+.timeline-page .focus-shell {
+  padding: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+}
+.timeline-stage {
+  display: grid;
+  gap: 18px;
+}
+.timeline-toolbar-wrap {
+  padding: 6px;
+  border-radius: 22px;
+  background: #f7f9fe;
+  border: 1px solid rgba(79, 107, 237, 0.1);
+}
+.timeline-page .focus-toolbar-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 0;
+}
+.timeline-page .focus-tab-btn {
+  min-width: 170px;
+  min-height: 78px;
+  border-radius: 16px;
+}
+.timeline-page .focus-tab-btn:first-child {
+  min-width: 210px;
+}
+.timeline-overview-stack {
+  display: grid;
+  gap: 18px;
+}
+.timeline-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  gap: 18px;
+  align-items: stretch;
+}
+.timeline-chart-card,
+.timeline-summary-card {
+  padding: 22px;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid rgba(79, 107, 237, 0.1);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+.timeline-chart-card {
+  min-height: 420px;
+}
+.timeline-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.timeline-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.timeline-mini-stat {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+  border: 1px solid rgba(79, 107, 237, 0.1);
+}
+.timeline-mini-stat .stat-label {
+  font-size: 0.88rem;
+}
+.timeline-mini-stat .stat-value {
+  margin-top: 8px;
+  font-size: 1.8rem;
+}
+.timeline-summary-note {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f8faff;
+  color: var(--muted);
+  line-height: 1.8;
+  border: 1px solid rgba(79, 107, 237, 0.08);
+}
+.timeline-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+.timeline-detail-score {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+.timeline-detail-shell {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+.timeline-page .expand-card {
+  border-radius: 20px;
+  opacity: 0.82;
+}
+.timeline-page .expand-card-head {
+  padding: 18px 20px;
+}
+.timeline-page .expand-card.is-active {
+  opacity: 1;
+}
+@media (max-width: 1200px) {
+  .timeline-overview-grid {
+    grid-template-columns: 1fr;
+  }
+  .timeline-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .timeline-chart-card {
+    min-height: 360px;
+  }
+}
+@media (max-width: 767px) {
+  .timeline-page .focus-shell,
+  .timeline-chart-card,
+  .timeline-summary-card {
+    padding: 18px;
+  }
+  .timeline-page .focus-tab-btn,
+  .timeline-page .focus-tab-btn:first-child {
+    min-width: 150px;
+  }
+}
+</style>
+{% endblock %}
+{% block content %}
+<section class="timeline-page">
+  <section class="page-header reveal-item" data-delay="0.04">
+    <div>
+      <div class="section-kicker">时间序列分析</div>
+      <h1 class="page-title">时间序列专注度分析</h1>
+      <p class="page-description">选择内置数据或导入本地 JSON，点击开始分析后查看结果。</p>
+    </div>
+  </section>
+
+  <div class="row g-4 align-items-start" data-analysis-page>
+    <div class="col-lg-4 col-xl-4">
+      <div class="panel-card sticky-panel reveal-item" data-delay="0.10">
+        <div class="panel-head mb-3">
+          <div>
+            <h3 class="panel-title mb-1">样本输入</h3>
+            <p class="panel-description mb-0">支持内置数据与本地 JSON 文件。</p>
+          </div>
+          <span class="chip chip-primary">输入区</span>
+        </div>
+        <form method="post" action="/timeline/demo" enctype="multipart/form-data" class="vstack gap-3 analysis-form">
+          <div>
+            <label class="form-label">选择内置数据</label>
+            <select class="form-select" name="builtin_name">
+              <option value="example_timeline">内置时序数据 A</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">导入样本文件</label>
+            <input class="form-control" type="file" name="upload_file" accept=".json">
+          </div>
+          <details class="soft-details">
+            <summary>查看或编辑样本内容</summary>
+            <div class="soft-details-body">
+              <textarea class="form-control code-area" name="raw_json" rows="12">{{ example_timeline | tojson(indent=2) }}</textarea>
+            </div>
+          </details>
+          <button class="btn btn-primary-soft w-100 analysis-submit-btn" type="submit" data-loading-button data-min-loading-ms="3200">
+            <span class="btn-label-default">开始分析</span>
+            <span class="btn-label-loading">正在分析</span>
+          </button>
+        </form>
+        {% if error %}<div class="alert alert-warning mt-3 mb-0">{{ error }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-8 col-xl-8" data-analysis-result-region>
+      <div class="panel-card loading-card analysis-loading-state d-none" data-analysis-loading>
+        <div class="analysis-loading-meta">
+          <div class="analysis-loading-icon">分析</div>
+          <div class="analysis-loading-head">
+            <h3 class="panel-title">正在分析</h3>
+            <div class="analysis-timer" data-analysis-timer>00.0s</div>
+          </div>
+        </div>
+        <p class="panel-description analysis-loading-description">系统正在处理当前时间序列数据，请稍候查看分析结果。</p>
+        <div class="analysis-loading-steps" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="analysis-process-list" data-analysis-process>
+          <div class="analysis-process-item is-active" data-step-item>
+            <span class="analysis-process-marker"></span>
+            <div>
+              <strong>解析时间序列</strong>
+              <p>读取时间片样本并完成序列整理。</p>
+            </div>
+          </div>
+          <div class="analysis-process-item" data-step-item>
+            <span class="analysis-process-marker"></span>
+            <div>
+              <strong>执行趋势分析</strong>
+              <p>计算变化趋势与各时间片判别结果。</p>
+            </div>
+          </div>
+          <div class="analysis-process-item" data-step-item>
+            <span class="analysis-process-marker"></span>
+            <div>
+              <strong>生成时序结论</strong>
+              <p>输出摘要、图表和详细说明。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if timeline_result and timeline_result.results %}
+      <div class="timeline-stage reveal-item" data-delay="0.16">
+        <div class="panel-card focus-shell" data-focus-group="timeline" data-default-focus="overview">
+          <div class="timeline-toolbar-wrap">
+            <div class="focus-toolbar focus-toolbar-scroll">
+              <button type="button" class="focus-tab-btn" data-focus-target="overview">
+                <span class="focus-tab-title">趋势概览</span>
+                <span class="focus-tab-subtitle">折线图与总体摘要</span>
+              </button>
+              {% for item in timeline_result.results %}
+              <button type="button" class="focus-tab-btn focus-tab-btn-compact" data-focus-target="detail-{{ item.time_block }}">
+                <span class="focus-tab-title">时间片 {{ item.time_block }}</span>
+                <span class="focus-tab-subtitle">{{ item.pred_label_text }} · {{ '%.2f'|format(item.pred_score) }}</span>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="focus-stage mt-3">
+            <section class="focus-panel" data-focus-panel="overview">
+              <div class="focus-panel-head mb-3">
+                <div>
+                  <div class="section-kicker">趋势概览</div>
+                  <h2 class="result-title">专注度变化曲线</h2>
+                  <p class="panel-description mt-2">{{ timeline_result.summary.timeline_comment }}</p>
+                </div>
+                <div class="score-panel score-panel-lg">
+                  <span class="score-caption">平均得分</span>
+                  <strong class="count-up-decimal" data-target="{{ timeline_result.summary.average_score }}">0.00</strong>
+                </div>
+              </div>
+
+              <div class="timeline-overview-stack">
+                <div class="timeline-chart-card">
+                  <div class="section-kicker">趋势图表</div>
+                  <div class="chart-shell mt-3"><canvas id="timelineChart"></canvas></div>
+                </div>
+                <div class="timeline-summary-card">
+                  <div class="section-kicker">摘要信息</div>
+                  <div class="summary-grid mt-3 timeline-summary-grid">
+                    <div class="timeline-mini-stat">
+                      <div class="stat-label">时间片数量</div>
+                      <div class="stat-value count-up" data-target="{{ timeline_result.summary.total_blocks }}">0</div>
+                    </div>
+                    <div class="timeline-mini-stat">
+                      <div class="stat-label">最高得分时间片</div>
+                      <div class="stat-value count-up" data-target="{{ timeline_result.summary.highest_block.time_block if timeline_result.summary.highest_block else 0 }}">0</div>
+                    </div>
+                    <div class="timeline-mini-stat">
+                      <div class="stat-label">最低得分时间片</div>
+                      <div class="stat-value count-up" data-target="{{ timeline_result.summary.lowest_block.time_block if timeline_result.summary.lowest_block else 0 }}">0</div>
+                    </div>
+                  </div>
+                  <div class="timeline-summary-note mt-3">点击上方时间片按钮，或直接点击折线图中的数据点，可切换到对应时间片的详细分析内容。</div>
+                </div>
+              </div>
+            </section>
+
+            {% for item in timeline_result.results %}
+            <section class="focus-panel" data-focus-panel="detail-{{ item.time_block }}">
+              <div class="focus-panel-head">
+                <div>
+                  <div class="section-kicker">时间片摘要</div>
+                  <h2 class="focus-panel-title">时间片 {{ item.time_block }} ｜ {{ item.pred_label_text }}</h2>
+                  <div class="timeline-detail-meta">
+                    {% if item.pred_label == 'HD' %}<span class="code-badge" data-bs-toggle="tooltip" title="HD：高度不专注">HD</span>{% elif item.pred_label == 'DE' %}<span class="code-badge" data-bs-toggle="tooltip" title="DE：不专注">DE</span>{% elif item.pred_label == 'EG' %}<span class="code-badge" data-bs-toggle="tooltip" title="EG：专注">EG</span>{% elif item.pred_label == 'HE' %}<span class="code-badge" data-bs-toggle="tooltip" title="HE：高度专注">HE</span>{% else %}<span class="code-badge">{{ item.pred_label }}</span>{% endif %}
+                    <span class="timeline-detail-score">得分 {{ '%.2f'|format(item.pred_score) }}</span>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-light-panel btn-sm" data-focus-target="overview">返回概览</button>
+              </div>
+
+              <div class="timeline-detail-shell">
+                <div class="expand-group" data-expand-group>
+                  <article class="expand-card" data-expand-item="e-{{ item.time_block }}">
+                    <button type="button" class="expand-card-head" data-expand-target="e-{{ item.time_block }}"><span>分析说明</span><span class="expand-card-action">展开详情</span></button>
+                    <div class="expand-card-body"><div class="expand-card-inner"><p class="content-text">{{ item.explanation.summary }}</p></div></div>
+                  </article>
+                  <article class="expand-card" data-expand-item="v-{{ item.time_block }}">
+                    <button type="button" class="expand-card-head" data-expand-target="v-{{ item.time_block }}"><span>一致性说明</span><span class="expand-card-action">展开详情</span></button>
+                    <div class="expand-card-body"><div class="expand-card-inner"><p class="content-text">{{ item.verification.credibility }}</p></div></div>
+                  </article>
+                  <article class="expand-card" data-expand-item="f-{{ item.time_block }}">
+                    <button type="button" class="expand-card-head" data-expand-target="f-{{ item.time_block }}"><span>反馈建议</span><span class="expand-card-action">展开详情</span></button>
+                    <div class="expand-card-body"><div class="expand-card-inner"><p class="content-text">{{ item.report.teacher_feedback }}</p></div></div>
+                  </article>
+                </div>
+              </div>
+            </section>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="analysis-empty-shell reveal-item" data-delay="0.16">
+        <div class="panel-card analysis-empty-state">
+          <div class="analysis-empty-hero">
+            <div class="analysis-empty-icon" aria-hidden="true">
+            <span class="analysis-empty-grid-line analysis-empty-grid-line-h"></span>
+            <span class="analysis-empty-grid-line analysis-empty-grid-line-v"></span>
+            <span class="analysis-empty-icon-bar analysis-empty-icon-bar-a"></span>
+            <span class="analysis-empty-icon-bar analysis-empty-icon-bar-b"></span>
+            <span class="analysis-empty-icon-bar analysis-empty-icon-bar-c"></span>
+            <span class="analysis-empty-icon-trend"></span>
+            <span class="analysis-empty-icon-dot analysis-empty-icon-dot-a"></span>
+            <span class="analysis-empty-icon-dot analysis-empty-icon-dot-b"></span>
+          </div>
+            <div>
+              <div class="section-kicker">等待分析</div>
+              <h3 class="panel-title mt-2">结果将在此处呈现</h3>
+              <p class="panel-description mt-2">请选择内置数据或导入本地 JSON 文件，然后点击左侧的开始分析。</p>
+            </div>
+          </div>
+          <div class="analysis-empty-grid">
+            <div class="analysis-empty-card">
+              <span class="analysis-empty-label">当前状态</span>
+              <strong>未开始分析</strong>
+            </div>
+            <div class="analysis-empty-card">
+              <span class="analysis-empty-label">展示内容</span>
+              <strong>趋势图、摘要、详情</strong>
+            </div>
+            <div class="analysis-empty-card">
+              <span class="analysis-empty-label">分析流程</span>
+              <strong>输入 → 分析 → 结果</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}<script>window.timelineChartData = {{ timeline_result.chart | tojson if timeline_result and timeline_result.chart else 'null' }};</script>{% endblock %}
