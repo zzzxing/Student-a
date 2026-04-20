@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}课堂实时分析页{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div class="section-kicker">Realtime Analysis</div>
+  <h1 class="page-title">课堂实时分析与动态预测</h1>
+  <p class="page-description">实时展示专注度曲线、预测下滑点、最佳干预时机、建议动作与解释依据。</p>
+</section>
+
+<form class="panel-card mb-3" method="get" action="/realtime">
+  <label class="form-label">选择课堂样本</label>
+  <div class="d-flex gap-2"><select class="form-select" name="dataset_id">{% for ds in datasets %}<option value="{{ ds.dataset_id }}" {% if ds.dataset_id == dataset_id %}selected{% endif %}>{{ ds.name }}</option>{% endfor %}</select><button class="btn btn-primary-soft" type="submit">切换</button></div>
+</form>
+
+<section class="summary-grid mb-3">
+  <article class="summary-card"><div class="stat-label">最佳干预时机</div><div class="stat-value">第 {{ analysis.best_intervention_block }} 片段</div></article>
+  <article class="summary-card"><div class="stat-label">当前阶段预测</div><div class="stat-value">{{ analysis.prediction_next }}</div></article>
+  <article class="summary-card"><div class="stat-label">课堂平均专注度</div><div class="stat-value">{{ '%.2f'|format(analysis.avg_focus) }}</div></article>
+</section>
+
+<div class="panel-card">
+  <div class="chart-shell"><canvas id="realtimeChart"></canvas></div>
+  <div id="realtimeInfo" class="mt-3"></div>
+  <div id="heatmap" class="mt-3"></div>
+  <div id="evidencePanel" class="mt-3"></div>
+</div>
+<script>window.realtimeDataset = {{ analysis | tojson }};</script>
+{% endblock %}

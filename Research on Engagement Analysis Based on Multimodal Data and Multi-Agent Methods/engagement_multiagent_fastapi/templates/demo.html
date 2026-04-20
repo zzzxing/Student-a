@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}演示模式页{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div class="section-kicker">Contest Demo</div>
+  <h1 class="page-title">一键竞赛演示模式</h1>
+  <p class="page-description">固定演示链：首页仪表盘 → 实时分析 → 单学生分析 → 课后报告。每页自动停留约 2.2 秒。</p>
+</section>
+<div class="panel-card">
+  <button class="btn btn-primary-soft" id="startDemoBtn">开始完整演示</button>
+  <div class="summary-grid mt-3">
+    <div class="summary-card"><div class="stat-label">步骤1</div><div class="stat-text mt-2">仪表盘总览</div></div>
+    <div class="summary-card"><div class="stat-label">步骤2</div><div class="stat-text mt-2">实时分析与干预</div></div>
+    <div class="summary-card"><div class="stat-label">步骤3</div><div class="stat-text mt-2">个体洞察 + 报告输出</div></div>
+  </div>
+</div>
+{% endblock %}

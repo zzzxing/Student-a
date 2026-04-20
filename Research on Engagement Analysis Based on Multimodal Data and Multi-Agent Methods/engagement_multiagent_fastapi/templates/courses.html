@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}课程列表{% endblock %}
+{% block content %}
+<h1 class="page-title">课程列表</h1>
+<div class="summary-grid mt-3">{% for item in courses %}<div class="summary-card"><div class="stat-label">{{ item.course_id }}</div><div class="stat-text mt-2">{{ item.name }}</div><div class="stat-text">授课教师：{{ item.teacher }}</div></div>{% endfor %}</div>
+{% endblock %}

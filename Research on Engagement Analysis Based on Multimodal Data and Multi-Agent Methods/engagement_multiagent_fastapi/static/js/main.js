@@ -1,1 +1,196 @@
-document.addEventListener("DOMContentLoaded",()=>{initRevealDelay();initLoadingButtons();initCountUp();initFocusGroups();initExpandGroups();initBootstrapTooltips();initTimelineChart()});function initRevealDelay(){document.querySelectorAll(".reveal-item").forEach(e=>{const t=e.dataset.delay;t&&e.style.setProperty("--delay",`${t}s`)})}function initLoadingButtons(){document.querySelectorAll("form").forEach(e=>{const t=e.querySelector("[data-loading-button]");t&&e.addEventListener("submit",a=>{if(t.disabled)return;a.preventDefault(),t.disabled=!0,t.classList.add("is-loading");const n=e.closest("[data-analysis-page]"),i=n?.querySelector("[data-analysis-loading]"),o=n?.querySelector("[data-analysis-result-region]"),r=Number(t.dataset.minLoadingMs||3200);i&&(i.classList.remove("d-none"),i.classList.add("is-active"),startAnalysisProgress(i,r)),o&&o.classList.add("is-loading"),window.setTimeout(()=>e.submit(),r)})})}function startAnalysisProgress(e,t){const a=e.querySelector("[data-analysis-timer]"),n=[...e.querySelectorAll("[data-step-item]")],i=performance.now(),o=Math.max(1,Math.floor(t/Math.max(n.length,1)));let r=0,c=null,d=null;function l(){if(!a)return;const e=((performance.now()-i)/1e3).toFixed(1).padStart(4,"0");a.textContent=`${e}s`}function s(e){n.length&&n.forEach((t,a)=>t.classList.toggle("is-active",a===e))}l(),s(0),c=window.setInterval(l,100),n.length>1&&(d=window.setInterval(()=>{r=Math.min(r+1,n.length-1),s(r),r===n.length-1&&d&&(clearInterval(d),d=null)},o)),window.addEventListener("pagehide",()=>{c&&clearInterval(c),d&&clearInterval(d)},{once:!0})}function initCountUp(){document.querySelectorAll(".count-up").forEach(e=>animateNumber(e,Number(e.dataset.target||0),0)),document.querySelectorAll(".count-up-decimal").forEach(e=>animateNumber(e,Number(e.dataset.target||0),2))}function animateNumber(e,t,a){const n=performance.now(),i=650;requestAnimationFrame(function o(r){const c=Math.min((r-n)/i,1),d=1-Math.pow(1-c,3);e.textContent=(t*d).toFixed(a),c<1&&requestAnimationFrame(o)})}function initFocusGroups(){document.querySelectorAll("[data-focus-group]").forEach(e=>{const t=[...e.querySelectorAll("[data-focus-panel]")],a=[...e.querySelectorAll("[data-focus-target]")];if(!t.length||!a.length)return;const n=e.dataset.defaultFocus||t[0].dataset.focusPanel;function i(n){t.forEach(e=>{const t=e.dataset.focusPanel===n;e.classList.toggle("is-active",t)}),a.forEach(e=>{const t=e.dataset.focusTarget===n;e.classList.toggle("is-active",t),e.classList.toggle("is-muted",!t)}),initBootstrapTooltips()}a.forEach(e=>e.addEventListener("click",()=>i(e.dataset.focusTarget))),e._activateFocus=i,i(n)})}function initExpandGroups(){document.querySelectorAll("[data-expand-group]").forEach(e=>{const t=[...e.querySelectorAll("[data-expand-item]")],a=[...e.querySelectorAll("[data-expand-target]")];if(!t.length||!a.length)return;function n(a){t.forEach(e=>{const t=e.dataset.expandItem===a;e.classList.toggle("is-active",t),e.classList.toggle("is-muted",!t)})}a.forEach(e=>e.addEventListener("click",()=>n(e.dataset.expandTarget))),n(t[0].dataset.expandItem)})}function initBootstrapTooltips(){"undefined"!=typeof bootstrap&&bootstrap.Tooltip&&document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(e=>{"true"!==e.dataset.tooltipBound&&(e.dataset.tooltipBound="true",new bootstrap.Tooltip(e,{trigger:"hover focus",placement:"top",customClass:"prototype-tooltip"}))})}function initTimelineChart(){const e=document.getElementById("timelineChart"),t=window.timelineChartData;if(!e||!t)return;const a=document.querySelector('[data-focus-group="timeline"]'),n=e.getContext("2d"),i=n.createLinearGradient(0,0,0,340);i.addColorStop(0,"rgba(79,107,237,.20)"),i.addColorStop(1,"rgba(79,107,237,.02)");new Chart(n,{type:"line",data:{labels:t.labels,datasets:[{label:"专注度得分",data:t.scores,borderColor:"#4F6BED",backgroundColor:i,borderWidth:2.5,pointRadius:4,pointHoverRadius:6,pointBorderWidth:2,pointBackgroundColor:"#FFFFFF",pointBorderColor:"#4F6BED",pointHoverBackgroundColor:"#4F6BED",pointHoverBorderColor:"#FFFFFF",tension:.35,fill:!0}]},options:{responsive:!0,maintainAspectRatio:!1,animation:{duration:650,easing:"easeOutCubic"},onClick:(e,t,n)=>{if(!t.length||!a||!a._activateFocus)return;const i=t[0].index,o=n.data.labels[i],r=String(o).match(/\d+/),c=r?r[0]:i+1;a._activateFocus(`detail-${c}`)},plugins:{legend:{labels:{color:"#1F2937",usePointStyle:!0,pointStyle:"circle",padding:18,font:{family:"Manrope",size:12,weight:700}}},tooltip:{backgroundColor:"rgba(31,41,55,.95)",titleColor:"#FFF",bodyColor:"#E5E7EB",padding:12,displayColors:!1}},scales:{x:{ticks:{color:"#6B7280",font:{family:"Manrope"}},grid:{color:"rgba(229,231,235,.8)",drawBorder:!1}},y:{ticks:{color:"#6B7280",font:{family:"Manrope"}},grid:{color:"rgba(229,231,235,.8)",drawBorder:!1}}}}})}
+document.addEventListener("DOMContentLoaded", () => {
+  initCountUp();
+  initFocusGroups();
+  initExpandGroups();
+  initTimelineChart();
+  initDashboardChart();
+  initRealtimePage();
+  initStudentPage();
+  initReportChart();
+  initDemoMode();
+});
+
+function initCountUp() {
+  document.querySelectorAll(".count-up, .count-up-decimal").forEach((el) => {
+    const target = Number(el.dataset.target || 0);
+    const decimals = el.classList.contains("count-up-decimal") ? 2 : 0;
+    animateNumber(el, target, decimals);
+  });
+}
+
+function animateNumber(el, target, decimals) {
+  const start = performance.now();
+  const duration = 700;
+  requestAnimationFrame(function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = (target * eased).toFixed(decimals);
+    if (progress < 1) requestAnimationFrame(step);
+  });
+}
+
+function initFocusGroups() {
+  document.querySelectorAll("[data-focus-group]").forEach((group) => {
+    const panels = [...group.querySelectorAll("[data-focus-panel]")];
+    const targets = [...group.querySelectorAll("[data-focus-target]")];
+    if (!panels.length || !targets.length) return;
+    const activate = (name) => {
+      panels.forEach((p) => p.classList.toggle("is-active", p.dataset.focusPanel === name));
+      targets.forEach((t) => t.classList.toggle("is-active", t.dataset.focusTarget === name));
+    };
+    targets.forEach((target) => target.addEventListener("click", () => activate(target.dataset.focusTarget)));
+    activate(group.dataset.defaultFocus || panels[0].dataset.focusPanel);
+    group._activateFocus = activate;
+  });
+}
+
+function initExpandGroups() {
+  document.querySelectorAll("[data-expand-group]").forEach((group) => {
+    const cards = [...group.querySelectorAll("[data-expand-item]")];
+    const targets = [...group.querySelectorAll("[data-expand-target]")];
+    if (!cards.length || !targets.length) return;
+    const activate = (name) => cards.forEach((card) => card.classList.toggle("is-active", card.dataset.expandItem === name));
+    targets.forEach((target) => target.addEventListener("click", () => activate(target.dataset.expandTarget)));
+    activate(cards[0].dataset.expandItem);
+  });
+}
+
+function initTimelineChart() {
+  const canvas = document.getElementById("timelineChart");
+  if (!canvas || !window.timelineChartData) return;
+  new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: window.timelineChartData.labels,
+      datasets: [{ label: "专注度得分", data: window.timelineChartData.scores, borderColor: "#4F6BED", tension: 0.35 }],
+    },
+  });
+}
+
+function initDashboardChart() {
+  const canvas = document.getElementById("dashboardChart");
+  if (!canvas || !window.dashboardCurve) return;
+  new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: window.dashboardCurve.labels,
+      datasets: [
+        { label: "实际专注度", data: window.dashboardCurve.actual, borderColor: "#4F6BED", tension: 0.3 },
+        { label: "下一片段预测", data: window.dashboardCurve.predict, borderColor: "#D97706", borderDash: [6, 5], tension: 0.3 },
+      ],
+    },
+  });
+}
+
+function initRealtimePage() {
+  const dataset = window.realtimeDataset;
+  const canvas = document.getElementById("realtimeChart");
+  if (!dataset || !canvas) return;
+
+  const labels = dataset.frames.map((f) => `片段${f.time_block}`);
+  const values = dataset.frames.map((f) => f.avg_focus);
+  const predicts = dataset.frames.map((f) => f.predicted_next_focus);
+  new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        { label: "实时专注度", data: values, borderColor: "#16A34A", tension: 0.28 },
+        { label: "动态预测", data: predicts, borderColor: "#D97706", borderDash: [5, 4], tension: 0.28 },
+      ],
+    },
+    options: { animation: false },
+  });
+
+  const info = document.getElementById("realtimeInfo");
+  const heatmap = document.getElementById("heatmap");
+  const evidencePanel = document.getElementById("evidencePanel");
+  let idx = 0;
+
+  const paint = () => {
+    const frame = dataset.frames[idx];
+    info.innerHTML = `
+      <div class="summary-grid">
+        <div class="summary-card"><div class="stat-label">课堂阶段</div><div class="stat-text mt-2">${frame.phase}</div></div>
+        <div class="summary-card"><div class="stat-label">最佳时机判断</div><div class="stat-text mt-2">${frame.intervention_needed ? "建议立即干预" : "建议轻干预"}</div></div>
+        <div class="summary-card"><div class="stat-label">推荐动作</div><div class="stat-text mt-2">${frame.recommended_action}</div></div>
+      </div>`;
+
+    heatmap.innerHTML = `<h3 class="panel-title mb-2">学生专注热力矩阵（时间片 ${frame.time_block}）</h3><div class="table-responsive"><table class="table"><thead><tr><th>学生</th><th>专注度</th><th>状态</th></tr></thead><tbody>${frame.students
+      .map((s) => `<tr style="background:${scoreColor(s.focus_score)}"><td>${s.student_name}</td><td>${s.focus_score}</td><td>${s.focus_state}</td></tr>`)
+      .join("")}</tbody></table></div>`;
+
+    evidencePanel.innerHTML = `
+      <div class="panel-card">
+        <h3 class="panel-title">解释依据（时间片 ${frame.time_block}）</h3>
+        <p class="panel-description mt-2">触发原因：${frame.intervention_reason}</p>
+        <div class="tag-group mt-2">
+          ${Object.entries(frame.evidence)
+            .map(([key, value]) => `<span class="soft-tag">${key}: ${value}</span>`)
+            .join("")}
+        </div>
+      </div>`;
+
+    idx = (idx + 1) % dataset.frames.length;
+  };
+
+  paint();
+  setInterval(paint, 1800);
+}
+
+function scoreColor(score) {
+  if (score >= 75) return "rgba(22,163,74,0.14)";
+  if (score >= 55) return "rgba(217,119,6,0.12)";
+  return "rgba(220,38,38,0.12)";
+}
+
+function initStudentPage() {
+  const data = window.studentTimeline;
+  const canvas = document.getElementById("studentChart");
+  if (!data || !canvas || !data.series) return;
+  new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: data.series.map((p) => `片段${p.time_block}`),
+      datasets: [{ label: `${data.student_name} 专注度`, data: data.series.map((p) => p.focus_score), borderColor: "#4F6BED", tension: 0.3 }],
+    },
+  });
+}
+
+function initReportChart() {
+  const series = window.reportSeries;
+  const canvas = document.getElementById("reportChart");
+  if (!series || !canvas) return;
+  new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: { labels: series.labels, datasets: [{ label: "课堂片段专注度", data: series.scores, backgroundColor: "rgba(79,107,237,0.55)" }] },
+  });
+}
+
+function initDemoMode() {
+  const btn = document.getElementById("startDemoBtn");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const steps = ["/dashboard", "/realtime?dataset_id=mid_drop", "/student/stu_002?dataset_id=mid_drop", "/report?dataset_id=recover_after_intervention"];
+      localStorage.setItem("efocus_demo_steps", JSON.stringify(steps));
+      localStorage.setItem("efocus_demo_next", "1");
+      window.location.href = steps[0];
+    });
+  }
+
+  const pendingIndex = localStorage.getItem("efocus_demo_next");
+  const steps = localStorage.getItem("efocus_demo_steps");
+  if (!pendingIndex || !steps) return;
+
+  const parsed = JSON.parse(steps);
+  const i = Number(pendingIndex);
+  if (parsed[i]) {
+    setTimeout(() => {
+      localStorage.setItem("efocus_demo_next", String(i + 1));
+      window.location.href = parsed[i];
+    }, 2200);
+  } else {
+    localStorage.removeItem("efocus_demo_next");
+    localStorage.removeItem("efocus_demo_steps");
+  }
+}
