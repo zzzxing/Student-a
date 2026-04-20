@@ -1,0 +1,21 @@
+{
+  "sample_id": "sample_001",
+  "time_block": 1,
+  "pred_label": "DE",
+  "pred_score": -0.35,
+  "vision": {
+    "gaze": "look_away",
+    "head_pose": "head_down",
+    "au_summary": "low_expression"
+  },
+  "audio": {
+    "has_speech": false,
+    "volume_level": "low",
+    "pitch_change": "small"
+  },
+  "text": {
+    "has_transcript": false,
+    "text_len": 0,
+    "summary": ""
+  }
+}

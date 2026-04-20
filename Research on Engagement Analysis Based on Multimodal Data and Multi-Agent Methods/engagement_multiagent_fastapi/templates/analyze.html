@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}样本分析 - 基于多模态数据与多智能体的专注度分析系统{% endblock %}
+{% block content %}
+<section class="page-header reveal-item" data-delay="0.04">
+  <div>
+    <div class="section-kicker">样本分析</div>
+    <h1 class="page-title">样本专注度分析</h1>
+    <p class="page-description">选择内置数据或导入本地 JSON，点击开始分析后查看结果。</p>
+  </div>
+</section>
+
+<div class="row g-4 align-items-start" data-analysis-page>
+  <div class="col-lg-4">
+    <div class="panel-card sticky-panel reveal-item" data-delay="0.10">
+      <div class="panel-head mb-3">
+        <div>
+          <h3 class="panel-title mb-1">样本输入</h3>
+          <p class="panel-description mb-0">支持内置数据与本地 JSON 文件。</p>
+        </div>
+        <span class="chip chip-primary">输入区</span>
+      </div>
+      <form method="post" action="/analyze/demo" enctype="multipart/form-data" class="vstack gap-3 analysis-form">
+        <div>
+          <label class="form-label">选择内置数据</label>
+          <select class="form-select" name="builtin_name"><option value="example_sample">内置数据 A</option></select>
+        </div>
+        <div>
+          <label class="form-label">导入样本文件</label>
+          <input class="form-control" type="file" name="upload_file" accept=".json">
+        </div>
+        <details class="soft-details">
+          <summary>查看或编辑样本内容</summary>
+          <div class="soft-details-body"><textarea class="form-control code-area" name="raw_json" rows="12">{{ example_sample | tojson(indent=2) }}</textarea></div>
+        </details>
+        <button class="btn btn-primary-soft w-100 analysis-submit-btn" type="submit" data-loading-button data-min-loading-ms="3200">
+          <span class="btn-label-default">开始分析</span>
+          <span class="btn-label-loading">正在分析</span>
+        </button>
+      </form>
+      {% if error %}<div class="alert alert-warning mt-3 mb-0">{{ error }}</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-8" data-analysis-result-region>
+    <div class="panel-card loading-card analysis-loading-state d-none" data-analysis-loading>
+      <div class="analysis-loading-meta">
+        <div class="analysis-loading-icon">分析</div>
+        <div class="analysis-loading-head">
+          <h3 class="panel-title">正在分析</h3>
+          <div class="analysis-timer" data-analysis-timer>00.0s</div>
+        </div>
+      </div>
+      <p class="panel-description analysis-loading-description">系统正在处理当前样本，请稍候查看分析结果。</p>
+      <div class="analysis-loading-steps" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="analysis-process-list" data-analysis-process>
+        <div class="analysis-process-item is-active" data-step-item>
+          <span class="analysis-process-marker"></span>
+          <div>
+            <strong>解析输入数据</strong>
+            <p>读取样本内容并提取多模态特征。</p>
+          </div>
+        </div>
+        <div class="analysis-process-item" data-step-item>
+          <span class="analysis-process-marker"></span>
+          <div>
+            <strong>执行协同分析</strong>
+            <p>融合视觉、语音与文本信息完成判别。</p>
+          </div>
+        </div>
+        <div class="analysis-process-item" data-step-item>
+          <span class="analysis-process-marker"></span>
+          <div>
+            <strong>生成解释结果</strong>
+            <p>整理结论、说明与反馈建议。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if initial_result %}
+    <div class="analysis-progress-shell reveal-item" data-delay="0.16">
+      <div class="panel-card focus-shell" data-focus-group="analyze" data-default-focus="overview">
+        <div class="focus-toolbar">
+          <button type="button" class="focus-tab-btn" data-focus-target="overview"><span class="focus-tab-title">分析概览</span><span class="focus-tab-subtitle">类别与核心指标</span></button>
+          <button type="button" class="focus-tab-btn" data-focus-target="explanation"><span class="focus-tab-title">分析说明</span><span class="focus-tab-subtitle">解释摘要与关键信息</span></button>
+          <button type="button" class="focus-tab-btn" data-focus-target="verification"><span class="focus-tab-title">一致性说明</span><span class="focus-tab-subtitle">跨模态结果说明</span></button>
+          <button type="button" class="focus-tab-btn" data-focus-target="feedback"><span class="focus-tab-title">反馈建议</span><span class="focus-tab-subtitle">建议与结果说明</span></button>
+        </div>
+
+        <div class="focus-stage">
+          <section class="focus-panel" data-focus-panel="overview">
+            <div class="focus-panel-head">
+              <div>
+                <div class="section-kicker">结果概览</div>
+                <h2 class="result-title">{{ initial_result.pred_label_text }}</h2>
+                <p class="result-meta mt-2">样本编号：{{ initial_result.sample_id }} ｜ 时间片：{{ initial_result.time_block }} ｜ 状态编码：{% if initial_result.pred_label == 'HD' %}<span class="code-badge" data-bs-toggle="tooltip" title="HD：高度不专注">HD</span>{% elif initial_result.pred_label == 'DE' %}<span class="code-badge" data-bs-toggle="tooltip" title="DE：不专注">DE</span>{% elif initial_result.pred_label == 'EG' %}<span class="code-badge" data-bs-toggle="tooltip" title="EG：专注">EG</span>{% elif initial_result.pred_label == 'HE' %}<span class="code-badge" data-bs-toggle="tooltip" title="HE：高度专注">HE</span>{% else %}<span class="code-badge">{{ initial_result.pred_label }}</span>{% endif %}</p>
+              </div>
+              <div class="score-panel"><span class="score-caption">专注度得分</span><strong class="count-up-decimal" data-target="{{ initial_result.pred_score }}">0.00</strong></div>
+            </div>
+            <div class="summary-grid mt-4">
+              <div class="summary-card"><div class="stat-label">类别</div><div class="stat-text mt-2">{{ initial_result.pred_label_text }}</div></div>
+              <div class="summary-card"><div class="stat-label">得分</div><div class="stat-text mt-2">{{ '%.2f'|format(initial_result.pred_score) }}</div></div>
+              <div class="summary-card"><div class="stat-label">结果状态</div><div class="stat-text mt-2">分析已完成</div></div>
+            </div>
+          </section>
+
+          <section class="focus-panel" data-focus-panel="explanation">
+            <div class="focus-panel-head"><div><div class="section-kicker">分析说明</div><h2 class="focus-panel-title">解释摘要与关键信息</h2><p class="panel-description">当前仅突出显示分析说明区域。</p></div></div>
+            <div class="expand-group" data-expand-group>
+              <article class="expand-card" data-expand-item="summary"><button type="button" class="expand-card-head" data-expand-target="summary"><span>解释摘要</span><span class="expand-card-action">展开详情</span></button><div class="expand-card-body"><div class="expand-card-inner"><p class="content-text">{{ initial_result.explanation.summary }}</p></div></div></article>
+              <article class="expand-card" data-expand-item="highlights"><button type="button" class="expand-card-head" data-expand-target="highlights"><span>关键信息</span><span class="expand-card-action">展开详情</span></button><div class="expand-card-body"><div class="expand-card-inner"><div class="tag-group">{% for item in initial_result.explanation.highlights %}<span class="soft-tag">{{ item }}</span>{% endfor %}</div></div></div></article>
+            </div>
+          </section>
+
+          <section class="focus-panel" data-focus-panel="verification">
+            <div class="focus-panel-head"><div><div class="section-kicker">一致性说明</div><h2 class="focus-panel-title">跨模态一致性分析</h2><p class="panel-description">当前仅突出显示一致性说明区域。</p></div><span class="chip chip-outline">{{ initial_result.verification.status }}</span></div>
+            <div class="expand-group" data-expand-group>
+              <article class="expand-card" data-expand-item="credibility"><button type="button" class="expand-card-head" data-expand-target="credibility"><span>结果说明</span><span class="expand-card-action">展开详情</span></button><div class="expand-card-body"><div class="expand-card-inner"><p class="content-text">{{ initial_result.verification.credibility }}</p></div></div></article>
+              <article class="expand-card" data-expand-item="conflicts"><button type="button" class="expand-card-head" data-expand-target="conflicts"><span>差异提示</span><span class="expand-card-action">展开详情</span></button><div class="expand-card-body"><div class="expand-card-inner"><ul class="detail-list mb-0">{% if initial_result.verification.conflicts %}{% for conflict in initial_result.verification.conflicts %}<li>{{ conflict }}</li>{% endfor %}{% else %}<li>当前样本未发现明显跨模态冲突。</li>{% endif %}</ul></div></div></article>
+            </div>
+          </section>
+
+          <section class="focus-panel" data-focus-panel="feedback">
+            <div class="focus-panel-head"><div><div class="section-kicker">反馈建议</div><h2 class="focus-panel-title">建议与结果说明</h2><p class="panel-description">当前仅突出显示反馈建议区域。</p></div></div>
+            <div class="expand-group" data-expand-group>
+              <article class="expand-card" data-expand-item="a"><button type="button" class="expand-card-head" data-expand-target="a"><span>反馈建议（一）</span><span class="expand-card-action">展开详情</span></button><div class="expand-card-body"><div class="expand-card-inner"><p class="content-text">{{ initial_result.report.teacher_feedback }}</p></div></div></article>
+              <article class="expand-card" data-expand-item="b"><button type="button" class="expand-card-head" data-expand-target="b"><span>反馈建议（二）</span><span class="expand-card-action">展开详情</span></button><div class="expand-card-body"><div class="expand-card-inner"><p class="content-text">{{ initial_result.report.student_feedback }}</p></div></div></article>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="analysis-empty-shell reveal-item" data-delay="0.16">
+      <div class="panel-card analysis-empty-state">
+        <div class="analysis-empty-hero">
+          <div class="analysis-empty-icon" aria-hidden="true">
+            <span class="analysis-empty-grid-line analysis-empty-grid-line-h"></span>
+            <span class="analysis-empty-grid-line analysis-empty-grid-line-v"></span>
+            <span class="analysis-empty-icon-bar analysis-empty-icon-bar-a"></span>
+            <span class="analysis-empty-icon-bar analysis-empty-icon-bar-b"></span>
+            <span class="analysis-empty-icon-bar analysis-empty-icon-bar-c"></span>
+            <span class="analysis-empty-icon-trend"></span>
+            <span class="analysis-empty-icon-dot analysis-empty-icon-dot-a"></span>
+            <span class="analysis-empty-icon-dot analysis-empty-icon-dot-b"></span>
+          </div>
+          <div>
+            <div class="section-kicker">等待分析</div>
+            <h3 class="panel-title mt-2">结果将在此处呈现</h3>
+            <p class="panel-description mt-2">请选择内置数据或导入本地 JSON 文件，然后点击左侧的开始分析。</p>
+          </div>
+        </div>
+        <div class="analysis-empty-grid">
+          <div class="analysis-empty-card">
+            <span class="analysis-empty-label">当前状态</span>
+            <strong>未开始分析</strong>
+          </div>
+          <div class="analysis-empty-card">
+            <span class="analysis-empty-label">展示内容</span>
+            <strong>类别、得分、解释</strong>
+          </div>
+          <div class="analysis-empty-card">
+            <span class="analysis-empty-label">分析流程</span>
+            <strong>输入 → 分析 → 结果</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
