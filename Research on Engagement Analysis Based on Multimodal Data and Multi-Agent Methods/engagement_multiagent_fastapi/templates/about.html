@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}关于项目{% endblock %}
+{% block content %}
+<h1 class="page-title">关于项目</h1>
+<div class="panel-card">
+  <p class="panel-description">E-Focus 面向中国大学生计算机设计大赛“人工智能应用”赛道，聚焦教学辅助而非监控。系统支持多模态融合、动态衰减预测、可解释性分析与干预建议生成。</p>
+  <ul class="detail-list mt-2">
+    <li>多模态输入：姿态、朝向、互动、语音活跃度。</li>
+    <li>动态建模：focus_t = base_focus * exp(-lambda * disengagement_minutes) + interaction_boost。</li>
+    <li>可解释输出：展示因素贡献占比与风险学生。</li>
+    <li>叙事报告：自动生成教学复盘文本。</li>
+  </ul>
+</div>
+{% endblock %}

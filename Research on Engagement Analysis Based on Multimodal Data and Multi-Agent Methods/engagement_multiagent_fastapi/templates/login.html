@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}教师登录{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="panel-card">
+      <div class="section-kicker">Teacher Portal</div>
+      <h1 class="page-title">教师登录</h1>
+      <p class="page-description">演示版默认账号任意输入，提交后进入仪表盘。</p>
+      <form method="post" action="/login" class="vstack gap-3 mt-3">
+        <input class="form-control" name="username" placeholder="用户名" required>
+        <input class="form-control" name="password" type="password" placeholder="密码" required>
+        <button class="btn btn-primary-soft" type="submit">登录并进入系统</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

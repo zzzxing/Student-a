@@ -1,0 +1,118 @@
+{
+  "classes": [
+    {"class_id": "class_001", "name": "软件工程 2301", "student_count": 8},
+    {"class_id": "class_002", "name": "数据科学 2302", "student_count": 8}
+  ],
+  "courses": [
+    {"course_id": "course_ai_01", "name": "人工智能导论", "teacher": "李老师"},
+    {"course_id": "course_math_01", "name": "离散数学", "teacher": "王老师"}
+  ],
+  "students": [
+    {"student_id": "stu_001", "name": "张晨"},
+    {"student_id": "stu_002", "name": "林悦"},
+    {"student_id": "stu_003", "name": "陈浩"},
+    {"student_id": "stu_004", "name": "赵宁"},
+    {"student_id": "stu_005", "name": "周可"},
+    {"student_id": "stu_006", "name": "吴杰"},
+    {"student_id": "stu_007", "name": "黄璇"},
+    {"student_id": "stu_008", "name": "刘凡"}
+  ],
+  "datasets": [
+    {
+      "dataset_id": "normal_class",
+      "name": "正常课堂样本",
+      "class_id": "class_001",
+      "course_id": "course_ai_01",
+      "frames": [
+        {"timestamp": "09:00", "phase": "intro", "students": [
+          {"student_id": "stu_001", "posture_score": 0.84, "face_orientation_score": 0.82, "interaction_score": 0.40, "speech_activity_score": 0.24, "distraction_duration": 1.4, "recent_engagement_gap": 2.0},
+          {"student_id": "stu_002", "posture_score": 0.78, "face_orientation_score": 0.75, "interaction_score": 0.38, "speech_activity_score": 0.18, "distraction_duration": 2.5, "recent_engagement_gap": 3.0},
+          {"student_id": "stu_003", "posture_score": 0.80, "face_orientation_score": 0.79, "interaction_score": 0.30, "speech_activity_score": 0.16, "distraction_duration": 2.1, "recent_engagement_gap": 3.2},
+          {"student_id": "stu_004", "posture_score": 0.76, "face_orientation_score": 0.74, "interaction_score": 0.26, "speech_activity_score": 0.12, "distraction_duration": 2.9, "recent_engagement_gap": 3.8}
+        ]},
+        {"timestamp": "09:08", "phase": "lecture", "students": [
+          {"student_id": "stu_001", "posture_score": 0.83, "face_orientation_score": 0.80, "interaction_score": 0.36, "speech_activity_score": 0.20, "distraction_duration": 2.0, "recent_engagement_gap": 3.0},
+          {"student_id": "stu_002", "posture_score": 0.76, "face_orientation_score": 0.72, "interaction_score": 0.30, "speech_activity_score": 0.14, "distraction_duration": 3.2, "recent_engagement_gap": 4.1},
+          {"student_id": "stu_003", "posture_score": 0.79, "face_orientation_score": 0.77, "interaction_score": 0.28, "speech_activity_score": 0.12, "distraction_duration": 3.0, "recent_engagement_gap": 4.5},
+          {"student_id": "stu_004", "posture_score": 0.74, "face_orientation_score": 0.70, "interaction_score": 0.22, "speech_activity_score": 0.10, "distraction_duration": 4.0, "recent_engagement_gap": 5.0}
+        ]},
+        {"timestamp": "09:16", "phase": "interaction", "students": [
+          {"student_id": "stu_001", "posture_score": 0.85, "face_orientation_score": 0.83, "interaction_score": 0.48, "speech_activity_score": 0.33, "distraction_duration": 1.2, "recent_engagement_gap": 2.0},
+          {"student_id": "stu_002", "posture_score": 0.80, "face_orientation_score": 0.78, "interaction_score": 0.44, "speech_activity_score": 0.27, "distraction_duration": 1.7, "recent_engagement_gap": 2.5},
+          {"student_id": "stu_003", "posture_score": 0.81, "face_orientation_score": 0.79, "interaction_score": 0.40, "speech_activity_score": 0.22, "distraction_duration": 2.1, "recent_engagement_gap": 3.0},
+          {"student_id": "stu_004", "posture_score": 0.79, "face_orientation_score": 0.75, "interaction_score": 0.36, "speech_activity_score": 0.18, "distraction_duration": 2.4, "recent_engagement_gap": 3.1}
+        ]},
+        {"timestamp": "09:24", "phase": "review", "students": [
+          {"student_id": "stu_001", "posture_score": 0.86, "face_orientation_score": 0.84, "interaction_score": 0.42, "speech_activity_score": 0.31, "distraction_duration": 1.0, "recent_engagement_gap": 1.8},
+          {"student_id": "stu_002", "posture_score": 0.81, "face_orientation_score": 0.80, "interaction_score": 0.39, "speech_activity_score": 0.25, "distraction_duration": 1.5, "recent_engagement_gap": 2.2},
+          {"student_id": "stu_003", "posture_score": 0.83, "face_orientation_score": 0.81, "interaction_score": 0.35, "speech_activity_score": 0.19, "distraction_duration": 2.0, "recent_engagement_gap": 2.8},
+          {"student_id": "stu_004", "posture_score": 0.80, "face_orientation_score": 0.77, "interaction_score": 0.30, "speech_activity_score": 0.16, "distraction_duration": 2.3, "recent_engagement_gap": 3.0}
+        ]}
+      ]
+    },
+    {
+      "dataset_id": "mid_drop",
+      "name": "中段下滑样本",
+      "class_id": "class_001",
+      "course_id": "course_ai_01",
+      "frames": [
+        {"timestamp": "14:00", "phase": "intro", "students": [
+          {"student_id": "stu_001", "posture_score": 0.83, "face_orientation_score": 0.82, "interaction_score": 0.36, "speech_activity_score": 0.22, "distraction_duration": 1.2, "recent_engagement_gap": 2.0},
+          {"student_id": "stu_002", "posture_score": 0.76, "face_orientation_score": 0.74, "interaction_score": 0.32, "speech_activity_score": 0.15, "distraction_duration": 2.8, "recent_engagement_gap": 3.2},
+          {"student_id": "stu_003", "posture_score": 0.74, "face_orientation_score": 0.72, "interaction_score": 0.28, "speech_activity_score": 0.13, "distraction_duration": 3.0, "recent_engagement_gap": 3.8},
+          {"student_id": "stu_004", "posture_score": 0.71, "face_orientation_score": 0.69, "interaction_score": 0.22, "speech_activity_score": 0.10, "distraction_duration": 3.8, "recent_engagement_gap": 4.5}
+        ]},
+        {"timestamp": "14:08", "phase": "lecture", "students": [
+          {"student_id": "stu_001", "posture_score": 0.73, "face_orientation_score": 0.70, "interaction_score": 0.18, "speech_activity_score": 0.08, "distraction_duration": 4.2, "recent_engagement_gap": 6.2},
+          {"student_id": "stu_002", "posture_score": 0.66, "face_orientation_score": 0.63, "interaction_score": 0.14, "speech_activity_score": 0.06, "distraction_duration": 5.4, "recent_engagement_gap": 7.0},
+          {"student_id": "stu_003", "posture_score": 0.62, "face_orientation_score": 0.60, "interaction_score": 0.12, "speech_activity_score": 0.05, "distraction_duration": 6.0, "recent_engagement_gap": 8.0},
+          {"student_id": "stu_004", "posture_score": 0.60, "face_orientation_score": 0.58, "interaction_score": 0.10, "speech_activity_score": 0.04, "distraction_duration": 6.5, "recent_engagement_gap": 8.4}
+        ]},
+        {"timestamp": "14:16", "phase": "lecture", "students": [
+          {"student_id": "stu_001", "posture_score": 0.69, "face_orientation_score": 0.67, "interaction_score": 0.15, "speech_activity_score": 0.07, "distraction_duration": 5.0, "recent_engagement_gap": 6.8},
+          {"student_id": "stu_002", "posture_score": 0.62, "face_orientation_score": 0.60, "interaction_score": 0.10, "speech_activity_score": 0.05, "distraction_duration": 6.2, "recent_engagement_gap": 7.6},
+          {"student_id": "stu_003", "posture_score": 0.58, "face_orientation_score": 0.56, "interaction_score": 0.09, "speech_activity_score": 0.04, "distraction_duration": 6.9, "recent_engagement_gap": 8.3},
+          {"student_id": "stu_004", "posture_score": 0.56, "face_orientation_score": 0.54, "interaction_score": 0.08, "speech_activity_score": 0.04, "distraction_duration": 7.2, "recent_engagement_gap": 9.1}
+        ]},
+        {"timestamp": "14:24", "phase": "review", "students": [
+          {"student_id": "stu_001", "posture_score": 0.72, "face_orientation_score": 0.71, "interaction_score": 0.25, "speech_activity_score": 0.15, "distraction_duration": 3.2, "recent_engagement_gap": 4.5},
+          {"student_id": "stu_002", "posture_score": 0.68, "face_orientation_score": 0.66, "interaction_score": 0.20, "speech_activity_score": 0.12, "distraction_duration": 3.8, "recent_engagement_gap": 5.2},
+          {"student_id": "stu_003", "posture_score": 0.65, "face_orientation_score": 0.63, "interaction_score": 0.16, "speech_activity_score": 0.11, "distraction_duration": 4.4, "recent_engagement_gap": 5.9},
+          {"student_id": "stu_004", "posture_score": 0.64, "face_orientation_score": 0.61, "interaction_score": 0.14, "speech_activity_score": 0.09, "distraction_duration": 4.8, "recent_engagement_gap": 6.2}
+        ]}
+      ]
+    },
+    {
+      "dataset_id": "recover_after_intervention",
+      "name": "干预回升样本",
+      "class_id": "class_002",
+      "course_id": "course_math_01",
+      "frames": [
+        {"timestamp": "10:00", "phase": "lecture", "students": [
+          {"student_id": "stu_005", "posture_score": 0.78, "face_orientation_score": 0.75, "interaction_score": 0.22, "speech_activity_score": 0.12, "distraction_duration": 3.3, "recent_engagement_gap": 4.3},
+          {"student_id": "stu_006", "posture_score": 0.73, "face_orientation_score": 0.71, "interaction_score": 0.18, "speech_activity_score": 0.09, "distraction_duration": 4.2, "recent_engagement_gap": 5.0},
+          {"student_id": "stu_007", "posture_score": 0.70, "face_orientation_score": 0.68, "interaction_score": 0.16, "speech_activity_score": 0.08, "distraction_duration": 4.8, "recent_engagement_gap": 5.6},
+          {"student_id": "stu_008", "posture_score": 0.68, "face_orientation_score": 0.66, "interaction_score": 0.14, "speech_activity_score": 0.07, "distraction_duration": 5.2, "recent_engagement_gap": 6.1}
+        ]},
+        {"timestamp": "10:08", "phase": "interaction", "students": [
+          {"student_id": "stu_005", "posture_score": 0.81, "face_orientation_score": 0.79, "interaction_score": 0.42, "speech_activity_score": 0.27, "distraction_duration": 2.0, "recent_engagement_gap": 2.8},
+          {"student_id": "stu_006", "posture_score": 0.78, "face_orientation_score": 0.75, "interaction_score": 0.37, "speech_activity_score": 0.23, "distraction_duration": 2.5, "recent_engagement_gap": 3.2},
+          {"student_id": "stu_007", "posture_score": 0.76, "face_orientation_score": 0.73, "interaction_score": 0.33, "speech_activity_score": 0.20, "distraction_duration": 2.8, "recent_engagement_gap": 3.5},
+          {"student_id": "stu_008", "posture_score": 0.74, "face_orientation_score": 0.71, "interaction_score": 0.31, "speech_activity_score": 0.18, "distraction_duration": 3.0, "recent_engagement_gap": 3.8}
+        ]},
+        {"timestamp": "10:16", "phase": "lecture", "students": [
+          {"student_id": "stu_005", "posture_score": 0.80, "face_orientation_score": 0.78, "interaction_score": 0.35, "speech_activity_score": 0.20, "distraction_duration": 2.5, "recent_engagement_gap": 3.5},
+          {"student_id": "stu_006", "posture_score": 0.77, "face_orientation_score": 0.74, "interaction_score": 0.32, "speech_activity_score": 0.18, "distraction_duration": 2.8, "recent_engagement_gap": 3.9},
+          {"student_id": "stu_007", "posture_score": 0.75, "face_orientation_score": 0.72, "interaction_score": 0.28, "speech_activity_score": 0.15, "distraction_duration": 3.2, "recent_engagement_gap": 4.4},
+          {"student_id": "stu_008", "posture_score": 0.72, "face_orientation_score": 0.69, "interaction_score": 0.25, "speech_activity_score": 0.13, "distraction_duration": 3.5, "recent_engagement_gap": 4.8}
+        ]},
+        {"timestamp": "10:24", "phase": "review", "students": [
+          {"student_id": "stu_005", "posture_score": 0.84, "face_orientation_score": 0.82, "interaction_score": 0.45, "speech_activity_score": 0.30, "distraction_duration": 1.6, "recent_engagement_gap": 2.3},
+          {"student_id": "stu_006", "posture_score": 0.81, "face_orientation_score": 0.79, "interaction_score": 0.41, "speech_activity_score": 0.27, "distraction_duration": 2.0, "recent_engagement_gap": 2.7},
+          {"student_id": "stu_007", "posture_score": 0.79, "face_orientation_score": 0.76, "interaction_score": 0.36, "speech_activity_score": 0.23, "distraction_duration": 2.3, "recent_engagement_gap": 3.0},
+          {"student_id": "stu_008", "posture_score": 0.76, "face_orientation_score": 0.74, "interaction_score": 0.32, "speech_activity_score": 0.20, "distraction_duration": 2.6, "recent_engagement_gap": 3.3}
+        ]}
+      ]
+    }
+  ]
+}
